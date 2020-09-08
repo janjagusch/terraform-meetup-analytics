@@ -3,6 +3,17 @@ variable "project" {
   description = "ID of the GCP project where to create the infrastructure."
 }
 
+variable "schedule" {
+  type        = string
+  description = "Crontab for requesting Meetup data"
+  default     = "0 0 * * *"
+}
+
+variable "meetup_group_id" {
+  type        = string
+  description = "ID of the Meetup group to request data from"
+}
+
 variable "meetup_client_id" {
   type        = string
   description = "ID of the Meetup client"

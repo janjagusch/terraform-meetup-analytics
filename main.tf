@@ -11,6 +11,7 @@ terraform {
 
 provider "google" {
   project = var.project
+  region  = "europe-west3"
 }
 
 # APIs
@@ -33,6 +34,13 @@ resource "google_project_service" "cloudbuild" {
 resource "google_project_service" "clouderrorreporting" {
   project = var.project
   service = "clouderrorreporting.googleapis.com"
+
+  disable_dependent_services = true
+}
+
+resource "google_project_service" "cloudscheduler" {
+  project = var.project
+  service = "cloudscheduler.googleapis.com"
 
   disable_dependent_services = true
 }
@@ -75,84 +83,7 @@ resource "google_bigquery_table" "members" {
   table_id    = "members"
   description = "Members of a meetup group"
 
-  schema = <<EOF
-[
-    {
-        "name": "id",
-        "type": "INTEGER",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "created_at",
-        "type": "DATETIME",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "joined_at",
-        "type": "DATETIME",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "updated_at",
-        "type": "DATETIME",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "visited_at",
-        "type": "DATETIME",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "role",
-        "type": "STRING",
-        "mode": "NULLABLE"
-    },
-    {
-        "name": "location",
-        "type": "RECORD",
-        "mode": "REQUIRED",
-        "fields": [
-            {
-                "name": "country",
-                "type": "STRING",
-                "mode": "REQUIRED"
-            },
-            {
-                "name": "city",
-                "type": "STRING",
-                "mode": "REQUIRED"
-            },
-            {
-                "name": "geo",
-                "type": "RECORD",
-                "mode": "REQUIRED",
-                "fields": [
-                    {
-                        "name": "lon",
-                        "type": "FLOAT",
-                        "mode": "REQUIRED"
-                    },
-                    {
-                        "name": "lat",
-                        "type": "FLOAT",
-                        "mode": "REQUIRED"
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "name": "requested_at",
-        "type": "DATETIME",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "inserted_at",
-        "type": "DATETIME",
-        "mode": "REQUIRED"
-    }
-]
-EOF
+  schema = file("./bigquery/tables/members.json")
 
 }
 
@@ -161,142 +92,7 @@ resource "google_bigquery_table" "events" {
   table_id    = "events"
   description = "Events of a meetup group"
 
-  schema = <<EOF
-[
-    {
-        "name": "id",
-        "type": "INTEGER",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "name",
-        "type": "STRING",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "group_id",
-        "type": "INTEGER",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "started_at",
-        "type": "DATETIME",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "duration",
-        "type": "INTEGER",
-        "mode": "REQUIRED",
-        "description": "Duration in  seconds"
-    },
-    {
-        "name": "rsvp_limit",
-        "type": "INTEGER",
-        "mode": "NULLABLE"
-    },
-    {
-        "name": "status",
-        "type": "STRING",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "yes_rsvp_count",
-        "type": "INTEGER",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "waitlist_count",
-        "type": "INTEGER",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "venue",
-        "type": "RECORD",
-        "mode": "REQUIRED",
-        "fields": [
-            {
-                "name": "name",
-                "type": "STRING",
-                "mode": "REQUIRED"
-            },
-            {
-                "name": "location",
-                "type": "RECORD",
-                "mode": "REQUIRED",
-                "fields": [
-                    {
-                        "name": "country",
-                        "type": "STRING",
-                        "mode": "REQUIRED"
-                    },
-                    {
-                        "name": "city",
-                        "type": "STRING",
-                        "mode": "REQUIRED"
-                    },
-                    {
-                        "name": "geo",
-                        "type": "RECORD",
-                        "mode": "REQUIRED",
-                        "fields": [
-                            {
-                                "name": "lon",
-                                "type": "FLOAT",
-                                "mode": "REQUIRED"
-                            },
-                            {
-                                "name": "lat",
-                                "type": "FLOAT",
-                                "mode": "REQUIRED"
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "name": "is_online_event",
-        "type": "BOOLEAN",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "visibility",
-        "type": "STRING",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "pro_is_email_shared",
-        "type": "BOOLEAN",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "member_pay_fee",
-        "type": "BOOLEAN",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "created_at",
-        "type": "DATETIME",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "updated_at",
-        "type": "DATETIME",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "requested_at",
-        "type": "DATETIME",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "inserted_at",
-        "type": "DATETIME",
-        "mode": "REQUIRED"
-    }
-]
-EOF
+  schema = file("./bigquery/tables/events.json")
 
 }
 
@@ -306,55 +102,7 @@ resource "google_bigquery_table" "rsvps" {
   table_id    = "rsvps"
   description = "RSVPs of a meetup event"
 
-  schema = <<EOF
-[
-    {
-        "name": "member_id",
-        "type": "INTEGER",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "event_id",
-        "type": "INTEGER",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "group_id",
-        "type": "INTEGER",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "response",
-        "type": "STRING",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "guests",
-        "type": "INTEGER",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "created_at",
-        "type": "DATETIME",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "updated_at",
-        "type": "DATETIME",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "requested_at",
-        "type": "DATETIME",
-        "mode": "REQUIRED"
-    },
-    {
-        "name": "inserted_at",
-        "type": "DATETIME",
-        "mode": "REQUIRED"
-    }
-]
-EOF
+  schema = file("./bigquery/tables/rsvps.json")
 
 }
 
@@ -364,7 +112,6 @@ resource "google_pubsub_topic" "meetup-request" {
 
 # Cloud functions
 
-# Functions.
 module "cloud_function_meetup_api_to_bigquery" {
   source = "./modules/cloud_function"
 
@@ -382,4 +129,28 @@ module "cloud_function_meetup_api_to_bigquery" {
     PROJECT_ID    = var.project
     FORCE_RSVPS   = var.meetup_force_rsvps ? 1 : 0
   }
+}
+
+# App engine
+
+resource "google_app_engine_application" "app" {
+  project     = var.project
+  location_id = "europe-west3"
+}
+
+# Cloud scheduler
+
+resource "google_cloud_scheduler_job" "meetup-request" {
+  name      = "meetup-request"
+  schedule  = var.schedule
+  time_zone = "Europe/Berlin"
+
+  pubsub_target {
+    topic_name = google_pubsub_topic.meetup-request.id
+    data       = base64encode("{\"group_id\": \"${var.meetup_group_id}\"}")
+  }
+
+  depends_on = [
+    google_app_engine_application.app
+  ]
 }
