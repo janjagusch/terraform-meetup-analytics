@@ -1,0 +1,7 @@
+cloud-functions-utils==0.2.2
+google-cloud-error-reporting==0.33.0
+google-resumable-media==1.0.0
+meetup-client==0.3.1
+meetup-token-manager==0.2.0
+pandas==1.1.1
+tqdm==4.48.2
