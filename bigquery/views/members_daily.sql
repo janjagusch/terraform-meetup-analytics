@@ -2,13 +2,13 @@ WITH
 days AS (
   SELECT
     GENERATE_DATE_ARRAY(CAST(MIN(joined_at) AS DATE), CURRENT_DATE(), INTERVAL 1 DAY) as days
-  FROM meetup.members
+  FROM meetup_raw.members
 )
 ,
 members_distinct AS (
   SELECT DISTINCT
     id
-  FROM meetup.members
+  FROM meetup_raw.members
 )
 ,
 requested_at_numbered AS (
@@ -18,7 +18,7 @@ requested_at_numbered AS (
   FROM (
     SELECT DISTINCT
       requested_at
-    FROM meetup.members
+    FROM meetup_raw.members
   )
 )
 ,
@@ -40,7 +40,7 @@ FROM
   days,
   UNNEST(days.days) day,
   requested_at_start_end requested_at
-LEFT JOIN meetup.members members
+LEFT JOIN meetup_raw.members members
 ON requested_at.requested_at = members.requested_at
 WHERE
   (CAST(requested_at.requested_at AS DATE) <= day OR requested_at.is_first_requested_at)

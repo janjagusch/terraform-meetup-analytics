@@ -2,7 +2,7 @@ WITH
 days AS (
   SELECT
     GENERATE_DATE_ARRAY(CAST(MIN(created_at) AS DATE), CURRENT_DATE(), INTERVAL 1 DAY) as days
-  FROM meetup.events
+  FROM meetup_raw.events
 )
 ,
 events_latest AS (
@@ -12,7 +12,7 @@ events_latest AS (
     SELECT
       *,
       ROW_NUMBER() OVER (PARTITION BY ID ORDER BY requested_at DESC) row_number
-    FROM meetup.events
+    FROM meetup_raw.events
   )
   WHERE row_number=1
 )
@@ -24,7 +24,7 @@ members_latest AS (
     SELECT
       *,
       ROW_NUMBER() OVER (PARTITION BY ID ORDER BY requested_at DESC) row_number
-    FROM meetup.members
+    FROM meetup_raw.members
   )
   WHERE row_number=1
 )
@@ -33,7 +33,7 @@ requested_at_numbered AS (
   SELECT
     *,
     row_number() OVER (PARTITION BY member_id, event_id, group_id ORDER BY requested_at) row_number
-  FROM meetup.rsvps
+  FROM meetup_raw.rsvps
 )
 ,
 requested_at_start_end AS (
