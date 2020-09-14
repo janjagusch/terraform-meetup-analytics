@@ -3,14 +3,14 @@ locals {
 }
 
 provider "google" {
-  project = var.project
+  project = var.project_id
   region  = "europe-west3"
 }
 
 # APIs
 
 resource "google_project_service" "cloudfunctions" {
-  project = var.project
+  project = var.project_id
   service = "cloudfunctions.googleapis.com"
 
   disable_dependent_services = true
@@ -18,21 +18,21 @@ resource "google_project_service" "cloudfunctions" {
 
 
 resource "google_project_service" "cloudbuild" {
-  project = var.project
+  project = var.project_id
   service = "cloudbuild.googleapis.com"
 
   disable_dependent_services = true
 }
 
 resource "google_project_service" "clouderrorreporting" {
-  project = var.project
+  project = var.project_id
   service = "clouderrorreporting.googleapis.com"
 
   disable_dependent_services = true
 }
 
 resource "google_project_service" "cloudscheduler" {
-  project = var.project
+  project = var.project_id
   service = "cloudscheduler.googleapis.com"
 
   disable_dependent_services = true
@@ -41,7 +41,7 @@ resource "google_project_service" "cloudscheduler" {
 # Buckets
 
 resource "google_storage_bucket" "tokens" {
-  name          = "${var.project}-meetup-analytics-token"
+  name          = "${var.project_id}-meetup-analytics-token"
   location      = "EU"
   force_destroy = true
 
@@ -60,7 +60,7 @@ resource "google_storage_bucket" "tokens" {
 }
 
 resource "google_storage_bucket" "functions" {
-  name     = "${var.project}-meetup-analytics-functions"
+  name     = "${var.project_id}-meetup-analytics-functions"
   location = "EU"
 }
 
@@ -112,14 +112,14 @@ module "cloud_function_meetup_api_to_bigquery" {
   source_zip_dir   = local.source_zip_dir
   func_description = "Requests data from Meetup API and inserts it into Google BigQuery"
   topic_name       = google_pubsub_topic.meetup-request.name
-  project_name     = var.project
+  project_name     = var.project_id
   bucket_name      = google_storage_bucket.functions.name
   func_environment_variables = {
     CLIENT_ID     = var.meetup_client_id
     CLIENT_SECRET = var.meetup_client_secret
     BUCKET_NAME   = google_storage_bucket.tokens.name
     BLOB_NAME     = var.meetup_blob_name
-    PROJECT_ID    = var.project
+    PROJECT_ID    = var.project_id
     FORCE_RSVPS   = var.meetup_force_rsvps ? 1 : 0
   }
 }
@@ -127,7 +127,7 @@ module "cloud_function_meetup_api_to_bigquery" {
 # App engine
 
 resource "google_app_engine_application" "app" {
-  project     = var.project
+  project     = var.project_id
   location_id = "europe-west3"
 }
 

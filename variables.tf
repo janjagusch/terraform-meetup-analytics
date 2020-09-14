@@ -1,4 +1,4 @@
-variable "project" {
+variable "project_id" {
   type        = string
   description = "ID of the GCP project where to create the infrastructure."
 }
@@ -27,9 +27,11 @@ variable "meetup_client_secret" {
 variable "meetup_blob_name" {
   type        = string
   description = "Name of the GCS blob where the Meetup token is stored"
+  default     = "token.json"
 }
 
 variable "meetup_force_rsvps" {
   type        = bool
   description = "Whether to force requesting Meetup RSVPs even though the event is in the past"
+  default     = true
 }
