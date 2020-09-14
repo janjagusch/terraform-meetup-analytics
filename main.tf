@@ -149,9 +149,9 @@ resource "google_bigquery_table" "rsvps-daily" {
 # Cloud functions
 
 module "cloud_function_meetup_api_to_bigquery" {
-  source = "./modules/cloud_function"
+  source = "${path.module}/modules/cloud_function"
 
-  source_dir       = "./cloud_functions/meetup-api-to-bigquery"
+  source_dir       = "${path.module}/cloud_functions/meetup-api-to-bigquery"
   source_zip_dir   = local.source_zip_dir
   func_description = "Requests data from Meetup API and inserts it into Google BigQuery"
   topic_name       = google_pubsub_topic.meetup-request.name
