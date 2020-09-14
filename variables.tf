@@ -24,11 +24,6 @@ variable "meetup_client_secret" {
   description = "Secret of the Meetup client"
 }
 
-variable "meetup_bucket_name" {
-  type        = string
-  description = "Name of the GCS bucket where the Meetup token is stored"
-}
-
 variable "meetup_blob_name" {
   type        = string
   description = "Name of the GCS blob where the Meetup token is stored"
