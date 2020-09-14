@@ -48,7 +48,7 @@ resource "google_project_service" "cloudscheduler" {
 # Buckets
 
 resource "google_storage_bucket" "tokens" {
-  name          = "meetup-analytics-token"
+  name          = "${var.project}-meetup-analytics-token"
   location      = "EU"
   force_destroy = true
 
@@ -67,7 +67,7 @@ resource "google_storage_bucket" "tokens" {
 }
 
 resource "google_storage_bucket" "functions" {
-  name     = "meetup-analytics-functions"
+  name     = "${var.project}-meetup-analytics-functions"
   location = "EU"
 }
 
@@ -124,7 +124,7 @@ module "cloud_function_meetup_api_to_bigquery" {
   func_environment_variables = {
     CLIENT_ID     = var.meetup_client_id
     CLIENT_SECRET = var.meetup_client_secret
-    BUCKET_NAME   = var.meetup_bucket_name
+    BUCKET_NAME   = google_storage_bucket.tokens.name
     BLOB_NAME     = var.meetup_blob_name
     PROJECT_ID    = var.project
     FORCE_RSVPS   = var.meetup_force_rsvps ? 1 : 0
