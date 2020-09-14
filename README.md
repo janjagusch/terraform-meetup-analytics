@@ -33,7 +33,7 @@ token = request_token(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI) # follow the instr
 
 cache = TokenCacheGCS(BUCKET_NAME, BLOB_NAME)
 
-cache._store_token(token) # stores the token in GCP
+cache._store_token(token.to_dict()) # stores the token in GCP
 ```
 
 Now everything is set up! 🌈
