@@ -64,15 +64,26 @@ resource "google_storage_bucket" "functions" {
   location = "EU"
 }
 
-resource "google_bigquery_dataset" "meetup" {
-  dataset_id    = "meetup"
-  friendly_name = "meetup"
-  description   = "Meetup analytics data"
+# BigQuery datasets
+
+resource "google_bigquery_dataset" "meetup-raw" {
+  dataset_id    = "meetup_raw"
+  friendly_name = "meetup raw"
+  description   = "Raw data from Meetup API"
   location      = "EU"
 }
 
+resource "google_bigquery_dataset" "meetup-analytics" {
+  dataset_id    = "meetup_analytics"
+  friendly_name = "meetup analytics"
+  description   = "Meetup data suitable for analytics"
+  location      = "EU"
+}
+
+# BigQuery tables
+
 resource "google_bigquery_table" "members" {
-  dataset_id  = google_bigquery_dataset.meetup.dataset_id
+  dataset_id  = google_bigquery_dataset.meetup-raw.dataset_id
   table_id    = "members"
   description = "Members of a meetup group"
 
@@ -81,7 +92,7 @@ resource "google_bigquery_table" "members" {
 }
 
 resource "google_bigquery_table" "events" {
-  dataset_id  = google_bigquery_dataset.meetup.dataset_id
+  dataset_id  = google_bigquery_dataset.meetup-raw.dataset_id
   table_id    = "events"
   description = "Events of a meetup group"
 
@@ -91,7 +102,7 @@ resource "google_bigquery_table" "events" {
 
 
 resource "google_bigquery_table" "rsvps" {
-  dataset_id  = google_bigquery_dataset.meetup.dataset_id
+  dataset_id  = google_bigquery_dataset.meetup-raw.dataset_id
   table_id    = "rsvps"
   description = "RSVPs of a meetup event"
 
@@ -101,6 +112,38 @@ resource "google_bigquery_table" "rsvps" {
 
 resource "google_pubsub_topic" "meetup-request" {
   name = "meetup-request"
+}
+
+# BigQuery views
+
+resource "google_bigquery_table" "events-latest" {
+  dataset_id  = google_bigquery_dataset.meetup-analytics.dataset_id
+  table_id    = "events_latest"
+  description = "The latest revision for events"
+  view {
+    query          = file("./bigquery/views/events_latest.sql")
+    use_legacy_sql = false
+  }
+}
+
+resource "google_bigquery_table" "members-daily" {
+  dataset_id  = google_bigquery_dataset.meetup-analytics.dataset_id
+  table_id    = "members_daily"
+  description = "Daily information about members"
+  view {
+    query          = file("./bigquery/views/members_daily.sql")
+    use_legacy_sql = false
+  }
+}
+
+resource "google_bigquery_table" "rsvps-daily" {
+  dataset_id  = google_bigquery_dataset.meetup-analytics.dataset_id
+  table_id    = "rsvps_daily"
+  description = "Daily information about RSVPs"
+  view {
+    query          = file("./bigquery/views/rsvps_daily.sql")
+    use_legacy_sql = false
+  }
 }
 
 # Cloud functions

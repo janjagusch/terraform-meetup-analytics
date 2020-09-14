@@ -7,10 +7,11 @@ import os
 import warnings
 
 import pandas as pd
-from cloud_functions_utils import decode, error_reporting, to_table
 from meetup.client import Client
 from meetup.token_manager import TokenCacheGCS, TokenManager
 from tqdm import tqdm
+
+from cloud_functions_utils import decode, error_reporting, to_table
 
 warnings.filterwarnings(
     "ignore", "Your application has authenticated using end user credentials"
@@ -23,6 +24,8 @@ TOKEN_MANAGER = TokenManager(
 )
 
 CLIENT = Client(access_token=lambda: TOKEN_MANAGER.token().access_token)
+
+DATASET_ID = "meetup_raw"
 
 
 def _merge_location_info(
@@ -221,7 +224,7 @@ def _main(client, group_id, project_id, force_rsvps=False):
         to_table(
             _transform_members(page, requested_at).to_dict(orient="records"),
             project_id,
-            "meetup",
+            DATASET_ID,
             "members",
         )
     # request, transform and insert events
@@ -240,7 +243,10 @@ def _main(client, group_id, project_id, force_rsvps=False):
             ].id
         )
         to_table(
-            events_transformed.to_dict(orient="records"), project_id, "meetup", "events"
+            events_transformed.to_dict(orient="records"),
+            project_id,
+            DATASET_ID,
+            "events",
         )
     # iterate through event ids
     # request, transform and insert rsvps per event id
@@ -250,7 +256,7 @@ def _main(client, group_id, project_id, force_rsvps=False):
             to_table(
                 _transform_rsvps(page, requested_at).to_dict(orient="records"),
                 project_id,
-                "meetup",
+                DATASET_ID,
                 "rsvps",
             )
 
