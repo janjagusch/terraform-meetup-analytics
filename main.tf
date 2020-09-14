@@ -1,5 +1,5 @@
 locals {
-  source_zip_dir = "./.source_zip"
+  source_zip_dir = "${path.module}/.source_zip"
 }
 
 provider "google" {
@@ -87,7 +87,7 @@ resource "google_bigquery_table" "members" {
   table_id    = "members"
   description = "Members of a meetup group"
 
-  schema = file("./bigquery/tables/members.json")
+  schema = file("${path.module}/bigquery/tables/members.json")
 
 }
 
@@ -96,7 +96,7 @@ resource "google_bigquery_table" "events" {
   table_id    = "events"
   description = "Events of a meetup group"
 
-  schema = file("./bigquery/tables/events.json")
+  schema = file("${path.module}/bigquery/tables/events.json")
 
 }
 
@@ -106,7 +106,7 @@ resource "google_bigquery_table" "rsvps" {
   table_id    = "rsvps"
   description = "RSVPs of a meetup event"
 
-  schema = file("./bigquery/tables/rsvps.json")
+  schema = file("${path.module}/bigquery/tables/rsvps.json")
 
 }
 
@@ -121,7 +121,7 @@ resource "google_bigquery_table" "events-latest" {
   table_id    = "events_latest"
   description = "The latest revision for events"
   view {
-    query          = file("./bigquery/views/events_latest.sql")
+    query          = file("${path.module}/bigquery/views/events_latest.sql")
     use_legacy_sql = false
   }
 }
@@ -131,7 +131,7 @@ resource "google_bigquery_table" "members-daily" {
   table_id    = "members_daily"
   description = "Daily information about members"
   view {
-    query          = file("./bigquery/views/members_daily.sql")
+    query          = file("${path.module}/bigquery/views/members_daily.sql")
     use_legacy_sql = false
   }
 }
@@ -141,7 +141,7 @@ resource "google_bigquery_table" "rsvps-daily" {
   table_id    = "rsvps_daily"
   description = "Daily information about RSVPs"
   view {
-    query          = file("./bigquery/views/rsvps_daily.sql")
+    query          = file("${path.module}/bigquery/views/rsvps_daily.sql")
     use_legacy_sql = false
   }
 }
