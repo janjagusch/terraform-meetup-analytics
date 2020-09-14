@@ -2,13 +2,6 @@ locals {
   source_zip_dir = "./.source_zip"
 }
 
-terraform {
-  backend "gcs" {
-    bucket = "meetup-analytics-tfstate"
-    prefix = "terraform/state"
-  }
-}
-
 provider "google" {
   project = var.project
   region  = "europe-west3"
