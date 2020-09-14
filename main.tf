@@ -149,7 +149,7 @@ resource "google_bigquery_table" "rsvps-daily" {
 # Cloud functions
 
 module "cloud_function_meetup_api_to_bigquery" {
-  source = "${path.module}/modules/cloud_function"
+  source = "./modules/cloud_function"
 
   source_dir       = "${path.module}/cloud_functions/meetup-api-to-bigquery"
   source_zip_dir   = local.source_zip_dir
