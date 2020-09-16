@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.3
+
+- Handle request error in generator properly.
+
 ## v0.2.2
 
 - Handle attendance request error when event has not started yet.
