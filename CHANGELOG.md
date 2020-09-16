@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.5
+
+- Add 'group_id' and 'event_id' to attendances.
+
 ## v0.2.4
 
 - Make 'id', 'updated_at', 'status' and 'guests' in attendances optional.
