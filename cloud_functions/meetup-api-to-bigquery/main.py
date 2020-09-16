@@ -246,7 +246,7 @@ def _request_attendances(client, group_id, event_id):
             only="member.id,attendance_id,status,updated,guests",
         )
     except RequestError:
-        print(f"Event {group_id}/{event_id} has no started yet.")
+        print(f"Event {group_id}/{event_id} has not started yet.")
         return []
 
 
