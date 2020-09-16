@@ -8,8 +8,8 @@ import warnings
 
 import pandas as pd
 from meetup.client import Client
-from meetup.token_manager import TokenCacheGCS, TokenManager
 from meetup.client.errors import RequestError
+from meetup.token_manager import TokenCacheGCS, TokenManager
 from tqdm import tqdm
 
 from cloud_functions_utils import decode, error_reporting, to_table
@@ -199,6 +199,10 @@ def _transform_events(events, requested_at, inplace=False):
 def _transform_attendances(df, group_id, event_id, requested_at, inplace=False):
     if not inplace:
         df = df.copy()
+    df["updated"] = df.get("updated")
+    df["attendance_id"] = df.get("attendance_id")
+    df["status"] = df.get("status")
+    df["guests"] = df.get("guests")
     return (
         df.pipe(_access_nested_value, keys=["member", "id"], new_col="member_id")
         .pipe(_cast_to_datetime, col="updated", new_col="updated_at")

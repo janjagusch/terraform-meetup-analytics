@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.4
+
+- Make 'id', 'updated_at', 'status' and 'guests' in attendances optional.
+
 ## v0.2.3
 
 - Handle request error in generator properly.
