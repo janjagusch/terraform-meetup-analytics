@@ -245,7 +245,7 @@ def _request_attendances(client, group_id, event_id):
     )
 
 
-def _main(client, group_id, project_id, force_rsvps=False):
+def _main(client, group_id, project_id, force_past_events=False):
     """
     Requests data from Meetup API and inserts it into Google BigQuery.
     """
@@ -271,7 +271,7 @@ def _main(client, group_id, project_id, force_rsvps=False):
                     events_transformed.started_at
                     > datetime.datetime.now() - datetime.timedelta(hours=24)
                 )
-                | force_rsvps
+                | force_past_events
             ].id
         )
         to_table(
@@ -313,5 +313,8 @@ def main(event, context):
     data = decode(event["data"])
     group_id = data["group_id"]
     _main(
-        CLIENT, group_id, os.environ["PROJECT_ID"], bool(os.environ.get("FORCE_RSVPS"))
+        CLIENT,
+        group_id,
+        os.environ["PROJECT_ID"],
+        bool(os.environ.get("FORCE_PAST_EVENTS")),
     )
