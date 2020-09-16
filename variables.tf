@@ -32,6 +32,12 @@ variable "meetup_blob_name" {
 
 variable "meetup_force_rsvps" {
   type        = bool
-  description = "Whether to force requesting Meetup RSVPs even though the event is in the past"
+  description = "Deprecated: Please use 'meetup_force_past_events' instead."
+  default     = true
+}
+
+variable "meetup_force_past_events" {
+  type        = bool
+  description = "Whether to force requesting Meetup RSVPs and attendances even though the event is in the past"
   default     = true
 }

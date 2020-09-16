@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.0
+
+- Added attendances table.
+
 ## v0.1.3
 
 - Rename dataset in view queries to "meetup_raw".

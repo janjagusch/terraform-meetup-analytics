@@ -195,6 +195,31 @@ def _transform_events(events, requested_at, inplace=False):
     )
 
 
+def _transform_attendances(df, group_id, event_id, requested_at, inplace=False):
+    if not inplace:
+        df = df.copy()
+    return (
+        df.pipe(_access_nested_value, keys=["member", "id"], new_col="member_id")
+        .pipe(_cast_to_datetime, col="updated", new_col="updated_at")
+        .pipe(_add_column, val=requested_at, new_col="requested_at")
+        .pipe(_add_column, val=datetime.datetime.now(), new_col="inserted_at")
+        .rename({"attendance_id": "id"}, axis=1)
+        .pipe(_replace_nan)[
+            [
+                "id",
+                "member_id",
+                "event_id",
+                "group_id",
+                "status",
+                "guests",
+                "updated_at",
+                "requested_at",
+                "inserted_at",
+            ]
+        ]
+    )
+
+
 def _request_members(client, group_id):
     return client.scan(
         url=f"{group_id}/members",
@@ -213,7 +238,14 @@ def _request_rsvps(client, group_id, event_id):
     )
 
 
-def _main(client, group_id, project_id, force_rsvps=False):
+def _request_attendances(client, group_id, event_id):
+    return client.scan(
+        url=f"{group_id}/events/{event_id}/attendance",
+        only="member.id,attendance_id,status,updated,guests",
+    )
+
+
+def _main(client, group_id, project_id, force_past_events=False):
     """
     Requests data from Meetup API and inserts it into Google BigQuery.
     """
@@ -239,7 +271,7 @@ def _main(client, group_id, project_id, force_rsvps=False):
                     events_transformed.started_at
                     > datetime.datetime.now() - datetime.timedelta(hours=24)
                 )
-                | force_rsvps
+                | force_past_events
             ].id
         )
         to_table(
@@ -249,15 +281,25 @@ def _main(client, group_id, project_id, force_rsvps=False):
             "events",
         )
     # iterate through event ids
-    # request, transform and insert rsvps per event id
     print("Processing rsvps.")
     for event_id in tqdm(event_ids):
+        # request, transform and insert rsvps per event id
         for page in _request_rsvps(client, group_id, event_id):
             to_table(
                 _transform_rsvps(page, requested_at).to_dict(orient="records"),
                 project_id,
                 DATASET_ID,
                 "rsvps",
+            )
+        # request, transform and insert attendances per event id
+        for page in _request_attendances(client, group_id, event_id):
+            to_table(
+                _transform_attendances(page, group_id, event_id, requested_at).to_dict(
+                    orient="records"
+                ),
+                project_id,
+                DATASET_ID,
+                "attendances",
             )
 
 
@@ -271,5 +313,8 @@ def main(event, context):
     data = decode(event["data"])
     group_id = data["group_id"]
     _main(
-        CLIENT, group_id, os.environ["PROJECT_ID"], bool(os.environ.get("FORCE_RSVPS"))
+        CLIENT,
+        group_id,
+        os.environ["PROJECT_ID"],
+        bool(os.environ.get("FORCE_PAST_EVENTS")),
     )
