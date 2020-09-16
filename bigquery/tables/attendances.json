@@ -2,7 +2,7 @@
   {
     "name": "id",
     "type": "INTEGER",
-    "mode": "REQUIRED"
+    "mode": "NULLABLE"
   },
   {
     "name": "member_id",
@@ -22,17 +22,17 @@
   {
     "name": "status",
     "type": "STRING",
-    "mode": "REQUIRED"
+    "mode": "NULLABLE"
   },
   {
     "name": "guests",
     "type": "INTEGER",
-    "mode": "REQUIRED"
+    "mode": "NULLABLE"
   },
   {
     "name": "updated_at",
     "type": "DATETIME",
-    "mode": "REQUIRED"
+    "mode": "NULLABLE"
   },
   {
     "name": "requested_at",
