@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.6
+
+- Convert 'group_id' in attendances to string.
+
 ## v0.2.5
 
 - Add 'group_id' and 'event_id' to attendances.
