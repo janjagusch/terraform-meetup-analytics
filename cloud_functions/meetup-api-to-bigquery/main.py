@@ -208,6 +208,8 @@ def _transform_attendances(df, group_id, event_id, requested_at, inplace=False):
         .pipe(_cast_to_datetime, col="updated", new_col="updated_at")
         .pipe(_add_column, val=requested_at, new_col="requested_at")
         .pipe(_add_column, val=datetime.datetime.now(), new_col="inserted_at")
+        .pipe(_add_column, val=group_id, new_col="group_id")
+        .pipe(_add_column, val=event_id, new_col="event_id")
         .rename({"attendance_id": "id"}, axis=1)
         .pipe(_replace_nan)[
             [
