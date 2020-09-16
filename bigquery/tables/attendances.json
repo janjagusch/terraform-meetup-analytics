@@ -16,7 +16,7 @@
   },
   {
     "name": "group_id",
-    "type": "INTEGER",
+    "type": "STRING",
     "mode": "REQUIRED"
   },
   {
