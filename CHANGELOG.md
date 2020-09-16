@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.2
+
+- Handle attendance request error when event has not started yet.
+
 ## v0.2.1
 
 - Remove provider.
