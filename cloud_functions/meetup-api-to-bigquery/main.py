@@ -199,7 +199,6 @@ def _transform_events(events, requested_at, inplace=False):
 def _transform_attendances(df, group_id, event_id, requested_at, inplace=False):
     if not inplace:
         df = df.copy()
-    df["id"] = df.get("id")
     df["updated"] = df.get("updated")
     df["attendance_id"] = df.get("attendance_id")
     df["status"] = df.get("status")
