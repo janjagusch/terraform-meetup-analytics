@@ -110,6 +110,18 @@ resource "google_bigquery_table" "rsvps" {
 
 }
 
+
+resource "google_bigquery_table" "attendances" {
+  dataset_id  = google_bigquery_dataset.meetup-raw.dataset_id
+  table_id    = "attendances"
+  description = "Attendances of a meetup event"
+
+  schema = file("${path.module}/bigquery/tables/attendances.json")
+
+}
+
+# PubSub topics
+
 resource "google_pubsub_topic" "meetup-request" {
   name = "meetup-request"
 }

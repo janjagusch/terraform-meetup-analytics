@@ -1,0 +1,47 @@
+[
+  {
+    "name": "id",
+    "type": "INTEGER",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "member_id",
+    "type": "INTEGER",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "event_id",
+    "type": "INTEGER",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "group_id",
+    "type": "INTEGER",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "status",
+    "type": "STRING",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "guests",
+    "type": "INTEGER",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "updated_at",
+    "type": "DATETIME",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "requested_at",
+    "type": "DATETIME",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "inserted_at",
+    "type": "DATETIME",
+    "mode": "REQUIRED"
+  }
+]
