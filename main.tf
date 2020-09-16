@@ -2,10 +2,7 @@ locals {
   source_zip_dir = "${path.module}/.source_zip"
 }
 
-provider "google" {
-  project = var.project_id
-  region  = "europe-west3"
-}
+provider "google" {}
 
 # APIs
 

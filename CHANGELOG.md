@@ -1,8 +1,12 @@
 # Changelog
 
+## v0.2.1
+
+- Remove provider.
+
 ## v0.2.0
 
-- Added attendances table.
+- Add attendances table.
 
 ## v0.1.3
 
