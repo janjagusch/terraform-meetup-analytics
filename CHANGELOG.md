@@ -2,7 +2,7 @@
 
 ## v0.2.2
 
-- Handle attendances request error when event has not started yet.
+- Handle attendance request error when event has not started yet.
 
 ## v0.2.1
 
