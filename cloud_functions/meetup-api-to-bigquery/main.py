@@ -240,14 +240,22 @@ def _request_rsvps(client, group_id, event_id):
 
 
 def _request_attendances(client, group_id, event_id):
+    """
+    Handle RequestError if it happens in the first yield.
+    """
+    i = 0
     try:
-        return client.scan(
+        for obj in client.scan(
             url=f"{group_id}/events/{event_id}/attendance",
             only="member.id,attendance_id,status,updated,guests",
-        )
-    except RequestError:
-        print(f"Event {group_id}/{event_id} has not started yet.")
-        return []
+        ):
+            yield obj
+            i += 1
+    except RequestError as error:
+        if not i:
+            print(f"Event {group_id}/{event_id} has not started yet.")
+            return
+        raise error
 
 
 def _main(client, group_id, project_id, force_past_events=False):
@@ -286,9 +294,9 @@ def _main(client, group_id, project_id, force_past_events=False):
             "events",
         )
     # iterate through event ids
-    print("Processing rsvps.")
     for event_id in tqdm(event_ids):
         # request, transform and insert rsvps per event id
+        print("Processing rsvps.")
         for page in _request_rsvps(client, group_id, event_id):
             to_table(
                 _transform_rsvps(page, requested_at).to_dict(orient="records"),
@@ -297,6 +305,7 @@ def _main(client, group_id, project_id, force_past_events=False):
                 "rsvps",
             )
         # request, transform and insert attendances per event id
+        print("Processing attendances.")
         for page in _request_attendances(client, group_id, event_id):
             to_table(
                 _transform_attendances(page, group_id, event_id, requested_at).to_dict(
