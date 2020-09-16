@@ -9,6 +9,7 @@ import warnings
 import pandas as pd
 from meetup.client import Client
 from meetup.token_manager import TokenCacheGCS, TokenManager
+from meetup.client.errors import RequestError
 from tqdm import tqdm
 
 from cloud_functions_utils import decode, error_reporting, to_table
@@ -239,10 +240,14 @@ def _request_rsvps(client, group_id, event_id):
 
 
 def _request_attendances(client, group_id, event_id):
-    return client.scan(
-        url=f"{group_id}/events/{event_id}/attendance",
-        only="member.id,attendance_id,status,updated,guests",
-    )
+    try:
+        return client.scan(
+            url=f"{group_id}/events/{event_id}/attendance",
+            only="member.id,attendance_id,status,updated,guests",
+        )
+    except RequestError:
+        print("Event has no started yet.")
+        return []
 
 
 def _main(client, group_id, project_id, force_past_events=False):
