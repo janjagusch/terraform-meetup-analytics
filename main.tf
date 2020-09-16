@@ -170,12 +170,12 @@ module "cloud_function_meetup_api_to_bigquery" {
   project_name     = var.project_id
   bucket_name      = google_storage_bucket.functions.name
   func_environment_variables = {
-    CLIENT_ID     = var.meetup_client_id
-    CLIENT_SECRET = var.meetup_client_secret
-    BUCKET_NAME   = google_storage_bucket.tokens.name
-    BLOB_NAME     = var.meetup_blob_name
-    PROJECT_ID    = var.project_id
-    FORCE_RSVPS   = var.meetup_force_rsvps ? 1 : 0
+    CLIENT_ID         = var.meetup_client_id
+    CLIENT_SECRET     = var.meetup_client_secret
+    BUCKET_NAME       = google_storage_bucket.tokens.name
+    BLOB_NAME         = var.meetup_blob_name
+    PROJECT_ID        = var.project_id
+    FORCE_PAST_EVENTS = var.meetup_force_past_events ? 1 : 0
   }
 }
 
