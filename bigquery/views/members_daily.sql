@@ -15,7 +15,8 @@ members_dedup AS (
     FROM `meetup_raw.members`
   )
   WHERE row_number=1
-),
+)
+,
 members_last_seen AS
 (
   SELECT
@@ -24,13 +25,15 @@ members_last_seen AS
   FROM `meetup_raw.members`
   GROUP BY id
 
-),
+)
+,
 members_numbered AS (
   SELECT
     *,
     ROW_NUMBER() OVER (PARTITION BY id ORDER BY updated_at DESC) row_number
   FROM members_dedup
-),
+)
+,
 members_latest AS (
   SELECT
     members_numbered.*,
@@ -39,7 +42,8 @@ members_latest AS (
   LEFT JOIN members_last_seen
   ON members_numbered.id = members_last_seen.id
   WHERE row_number=1
-),
+)
+,
 members_start_end AS (
   SELECT
     start_.*,
@@ -50,12 +54,14 @@ members_start_end AS (
   WHERE
     start_.row_number - 1 = end_.row_number
     AND start_.id = end_.id
-),
+)
+,
 members_joined AS (
   SELECT * FROM members_latest
   UNION ALL
   SELECT * FROM members_start_end
-),
+)
+,
 members_cleaned AS (
   SELECT
     members_joined.* EXCEPT(row_number),
