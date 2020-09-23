@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.2.7
+
+- Fixed 'members_daily' query.
+
 ## v0.2.6
 
 - Convert 'group_id' in attendances to string.
