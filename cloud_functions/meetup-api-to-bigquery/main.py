@@ -6,13 +6,13 @@ import datetime
 import os
 import warnings
 
+import numpy as np
 import pandas as pd
+from cloud_functions_utils import decode, error_reporting, to_table
 from meetup.client import Client
 from meetup.client.errors import RequestError
 from meetup.token_manager import TokenCacheGCS, TokenManager
 from tqdm import tqdm
-
-from cloud_functions_utils import decode, error_reporting, to_table
 
 warnings.filterwarnings(
     "ignore", "Your application has authenticated using end user credentials"
@@ -74,7 +74,7 @@ def _cast_to_datetime(df, col, new_col=None):
 
 
 def _replace_nan(df):
-    return df.replace({pd.NA: None})
+    return df.replace({pd.NA: None, np.nan: None})
 
 
 def _transform_members(members, requested_at, inplace=False):
@@ -160,6 +160,7 @@ def _transform_events(events, requested_at, inplace=False):
         .pipe(_access_nested_value, keys=["venue", "lon"], new_col="lon")
         .pipe(_access_nested_value, keys=["venue", "lat"], new_col="lat")
         .pipe(_access_nested_value, keys=["venue", "name"], new_col="venue_name")
+        .pipe(_replace_nan)
         .pipe(_merge_location_info)
         .pipe(
             _add_column,
@@ -170,8 +171,7 @@ def _transform_events(events, requested_at, inplace=False):
             new_col="venue",
         )
         .pipe(_add_column, val=requested_at, new_col="requested_at")
-        .pipe(_add_column, val=datetime.datetime.now(), new_col="inserted_at")
-        .pipe(_replace_nan)[
+        .pipe(_add_column, val=datetime.datetime.now(), new_col="inserted_at")[
             [
                 "id",
                 "name",
@@ -313,13 +313,10 @@ def _main(client, group_id, project_id, force_past_events=False):
         # request, transform and insert attendances per event id
         print("Processing attendances.")
         for page in _request_attendances(client, group_id, event_id):
+            df = _transform_attendances(page, group_id, event_id, requested_at)
+            df["updated_at"] = df["updated_at"].replace({pd.NaT: None})
             to_table(
-                _transform_attendances(page, group_id, event_id, requested_at).to_dict(
-                    orient="records"
-                ),
-                project_id,
-                DATASET_ID,
-                "attendances",
+                df.to_dict(orient="records"), project_id, DATASET_ID, "attendances"
             )
 
 
