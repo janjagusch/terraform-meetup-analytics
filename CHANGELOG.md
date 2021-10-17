@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.0
+
+- Fixed missing value handling in cloud function.
+- Bumped pandas version to `1.3.3`.
+
 ## v0.2.7
 
 - Fixed 'members_daily' query.
