@@ -33,3 +33,6 @@ terraform.tfvars
 
 # Folder for zipped source code
 .source_zip/
+
+.env
+gcp-key.json
