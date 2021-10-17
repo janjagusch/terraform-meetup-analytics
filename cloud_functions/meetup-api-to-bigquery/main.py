@@ -8,7 +8,7 @@ import warnings
 
 import numpy as np
 import pandas as pd
-from cloud_functions_utils import decode, error_reporting, to_table
+from cloud_functions_utils import decode, to_table
 from meetup.client import Client
 from meetup.client.errors import RequestError
 from meetup.token_manager import TokenCacheGCS, TokenManager
@@ -320,7 +320,6 @@ def _main(client, group_id, project_id, force_past_events=False):
             )
 
 
-@error_reporting
 # pylint: disable=unused-argument
 def main(event, context):
     # pylint: enable=unused-argument
